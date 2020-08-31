@@ -1,48 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
+//ROUTER STUFF
 import {
-    BrowserRouter as Router,
+    BrowserRouter as Router, //vs HashRouter which adds # to url. BrowserRouter is cleaner
     Route,
     Switch,
     Redirect
 } from 'react-router-dom';
 
+//COMPONENTS
 import {
     Header,
     UserPosts,
     UserTodos
 } from './components';
 
+//API 
 import {
     getUsers,
     getPostsByUser,
     getTodosByUser
 } from './api';
 
-// NEW
+//AUTHORIZATION
 import {
     getCurrentUser
 } from './auth';
 
 const App = () => {
     const [userList, setUserList] = useState([]);
-
-    // MODIFIED
     const [currentUser, setCurrentUser] = useState(getCurrentUser());
-
     const [userPosts, setUserPosts] = useState([]);
     const [userTodos, setUserTodos] = useState([]);
 
+    //makes call to API
     useEffect(() => {
+        console.log("useEffect related to current user");
         getUsers()
             .then(users => {
+                //sets the api data to be on our state
                 setUserList(users)
             })
             .catch(error => {
-                // something something errors
+                console.error(error)
             });
-    }, []);
+    }, []); //empty array means it will only run once 
+    //Array is list of dependencies. If something was in this array, and its state changed, the function would be called again.
 
     useEffect(() => {
         if (!currentUser) {
@@ -50,24 +54,28 @@ const App = () => {
             setUserTodos([]);
             return;
         }
-
+        //if not current user, returns empty array
         getPostsByUser(currentUser.id)
             .then(posts => {
-                setUserPosts(posts);
+                setUserPosts(posts); //populates the current users posts
             })
             .catch(error => {
-                // something something errors
+                console.error(error)
             });
 
         getTodosByUser(currentUser.id)
             .then(todos => {
-                setUserTodos(todos);
+                setUserTodos(todos); //populates the current users todos
             })
             .catch(error => {
-                // something something errors
+                console.error(error)
             });
-    }, [currentUser]);
+    }, [currentUser]); //currentUser array looks for a change in the state, and reruns the function
 
+    // CONDITIONAL RENDERING
+    // inside return, can only use JSX, no if/else, can user ternary
+    //<> = shorthand for <React.Fragment>
+    //If user renders header buttons with posts/todo routes OR if no user, redirect defaults to home page/root folder
     return (
         <Router>
             <div id="App">

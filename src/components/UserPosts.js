@@ -6,6 +6,7 @@ const UserPosts = ({
     currentUser,
     userPosts
 }) => {
+    //displays current users posts
     return (
         <div className="user-posts">
             <h2>Posts By {currentUser.username}</h2>
